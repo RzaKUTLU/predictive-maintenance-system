@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}Bakım Asistanı - Öngörülü Bakım{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-robot text-primary me-3"></i>
+                    Bakım Asistanı
+                </h1>
+                <p class="lead text-muted">AI destekli bakım planlaması ve danışmanlık hizmeti</p>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>
+                        Bakım Uzmanı ile Sohbet
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Chat Messages -->
+                    <div id="chatMessages" class="chat-messages mb-4" style="height: 400px; overflow-y: auto;">
+                        <div class="message bot-message">
+                            <div class="message-content">
+                                <div class="d-flex align-items-start">
+                                    <div class="avatar me-3">
+                                        <i class="fas fa-robot text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="message-bubble bg-light p-3 rounded" style="color: #212529;">
+                                            <p class="mb-0">
+                                                Merhaba! Ben bakım asistanınızım. Google Sheets'teki bakım verilerinizi analiz ederek size yardımcı olabilirim.
+                                                <br><br>
+                                                Aşağıdaki konularda sorularınızı yanıtlayabilirim:
+                                                <br>• Bakım planlaması
+                                                <br>• Arıza önleme stratejileri
+                                                <br>• Maliyetleri optimize etme
+                                                <br>• Güvenlik önerileri
+                                                <br>• Verimlilik artırma
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="input-area">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <textarea 
+                                        id="messageInput" 
+                                        class="form-control" 
+                                        rows="3" 
+                                        placeholder="Bakım ile ilgili sorunuzu buraya yazın..." 
+                                        style="resize: none;"
+                                    ></textarea>
+                                    <button class="btn btn-primary" type="button" id="sendButton">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Gönder
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Status -->
+                    <div class="mt-3">
+                        <div id="dataStatus" class="alert alert-info" role="alert" style="display: none;">
+                            <i class="fas fa-database me-2"></i>
+                            <span id="dataStatusText"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Questions -->
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>
+                        Örnek Sorular
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm sample-question" 
+                                        data-question="Tüm makineleri kalan kullanım ömrüne göre sırala">
+                                    <i class="fas fa-cogs me-2"></i>
+                                    Tüm Makineler Sıralaması
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm sample-question" 
+                                        data-question="MC_000001 makinesinin durumu nasıl?">
+                                    <i class="fas fa-search me-2"></i>
+                                    Belirli Makine Durumu
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm sample-question" 
+                                        data-question="Arıza riski olan makineleri öncelik sırasına göre listele">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Arıza Riski Sıralaması
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm sample-question" 
+                                        data-question="Hangi makine türleri daha sık arıza veriyor?">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Arıza Analizi
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm sample-question" 
+                                        data-question="Kalan ömrü 50 günden az olanları listele">
+                                    <i class="fas fa-hourglass-end me-2"></i>
+                                    Kısa Ömürlü Makineler
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm sample-question" 
+                                        data-question="Genel bakım stratejisi öner">
+                                    <i class="fas fa-lightbulb me-2"></i>
+                                    Bakım Stratejisi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-messages {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.message {
+    margin-bottom: 1rem;
+}
+
+.message-bubble {
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    text-align: right;
+}
+
+.user-message .message-bubble {
+    background-color: var(--bs-primary) !important;
+    color: white;
+    margin-left: auto;
+}
+
+.bot-message .message-bubble {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.typing-indicator {
+    display: none;
+    padding: 0.5rem 1rem;
+    font-style: italic;
+    color: #6c757d;
+}
+
+.typing-indicator.show {
+    display: block;
+}
+
+.sample-question {
+    text-align: left;
+    white-space: normal;
+    height: auto;
+    padding: 0.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const chatMessages = document.getElementById('chatMessages');
+    const dataStatus = document.getElementById('dataStatus');
+    const dataStatusText = document.getElementById('dataStatusText');
+    const sampleQuestions = document.querySelectorAll('.sample-question');
+
+    // Sample question handlers
+    sampleQuestions.forEach(button => {
+        button.addEventListener('click', function() {
+            const question = this.getAttribute('data-question');
+            messageInput.value = question;
+            sendMessage();
+        });
+    });
+
+    // Enter key handler
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Send button handler
+    sendButton.addEventListener('click', sendMessage);
+
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        // Add user message to chat
+        addUserMessage(message);
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Send to backend
+        fetch('/maintenance_chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                question: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideTypingIndicator();
+            
+            if (data.error) {
+                addBotMessage('Hata: ' + data.error);
+            } else {
+                addBotMessage(data.response);
+                
+                // Update data status
+                if (data.data_available) {
+                    dataStatusText.textContent = `Veri durumu: ${data.data_rows} kayıt başarıyla okundu`;
+                    dataStatus.className = 'alert alert-success';
+                    dataStatus.style.display = 'block';
+                } else {
+                    dataStatusText.textContent = 'Veri durumu: Google Sheets verileri okunamadı';
+                    dataStatus.className = 'alert alert-warning';
+                    dataStatus.style.display = 'block';
+                }
+            }
+        })
+        .catch(error => {
+            hideTypingIndicator();
+            addBotMessage('Bağlantı hatası: ' + error.message);
+        });
+    }
+
+    function addUserMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message user-message';
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <div class="d-flex align-items-start justify-content-end">
+                    <div class="flex-grow-1">
+                        <div class="message-bubble bg-primary text-white p-3 rounded">
+                            <p class="mb-0">${escapeHtml(message)}</p>
+                        </div>
+                    </div>
+                    <div class="avatar ms-3 bg-primary text-white">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function addBotMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message';
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <div class="d-flex align-items-start">
+                    <div class="avatar me-3">
+                        <i class="fas fa-robot text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="message-bubble bg-light p-3 rounded" style="color: #212529;">
+                            <p class="mb-0">${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator show';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <div class="avatar me-3">
+                    <i class="fas fa-robot text-primary"></i>
+                </div>
+                <div>
+                    <i class="fas fa-ellipsis-h"></i> Yazıyor...
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+});
+</script>
+{% endblock %}

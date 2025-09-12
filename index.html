@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Makine Arıza Tahmini - Öngörülü Bakım{% endblock %}
+
+{% block content %}
+<div class="hero-section py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-robot text-info me-3"></i>
+                    Makine Arıza Tahmini
+                </h1>
+                <p class="lead mb-4">
+                    Makine öğrenmesi kullanarak ekipman arızalarını tahmin eden ve kalan kullanım ömrünü 
+                    hesaplayan gelişmiş öngörülü bakım sistemi.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#prediction-form" class="btn btn-outline-info btn-lg">
+                        <i class="fas fa-play me-2"></i>Tahmini Başlat
+                    </a>
+                    <a href="{{ url_for('docs') }}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-code me-2"></i>API Dökümantasyonu
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-industry display-1 text-muted"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Arıza Tahmini</h5>
+                    <p class="card-text">Bir makinenin önümüzdeki 7 gün içinde arızalanıp arızalanmayacağını yüksek doğrulukla tahmin eder.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-percentage fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Arıza Olasılığı</h5>
+                    <p class="card-text">Arıza olasılığını değerlendirmek için kesin olasılık skorları alın.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Kalan Ömür</h5>
+                    <p class="card-text">Bakım planlaması için gün cinsinden kalan kullanım ömrünü tahmin eder.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Form -->
+    <div id="prediction-form" class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        Makine Parametreleri Girişi
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('predict_web') }}" id="predictionForm">
+                        <div class="row">
+                            <!-- Machine ID -->
+                            <div class="col-md-6 mb-3">
+                                <label for="machine_id" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>Makine ID (İsteğe Bağlı)
+                                </label>
+                                <input type="text" class="form-control" id="machine_id" 
+                                       name="machine_id" placeholder="örn., MAKINE_001">
+                                <div class="form-text">Otomatik ID için boş bırakın</div>
+                            </div>
+
+                            <!-- Temperature -->
+                            <div class="col-md-6 mb-3">
+                                <label for="temperature" class="form-label">
+                                    <i class="fas fa-thermometer-half me-1"></i>Sıcaklık (°C)
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="temperature" 
+                                       name="temperature" required placeholder="örn., 75.5">
+                                <div class="form-text">Çalışma sıcaklığı (Celsius)</div>
+                            </div>
+
+                            <!-- Vibration -->
+                            <div class="col-md-6 mb-3">
+                                <label for="vibration" class="form-label">
+                                    <i class="fas fa-wave-square me-1"></i>Titreşim (mm/s)
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="vibration" 
+                                       name="vibration" required placeholder="örn., 4.2">
+                                <div class="form-text">Titreşim seviyesi (mm/s)</div>
+                            </div>
+
+                            <!-- Power Consumption -->
+                            <div class="col-md-6 mb-3">
+                                <label for="power_consumption" class="form-label">
+                                    <i class="fas fa-bolt me-1"></i>Güç Tüketimi (kW)
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="power_consumption" 
+                                       name="power_consumption" required placeholder="örn., 150.3">
+                                <div class="form-text">Kilowatt cinsinden güç tüketimi</div>
+                            </div>
+
+                            <!-- Operational Hours -->
+                            <div class="col-md-6 mb-3">
+                                <label for="operational_hours" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Çalışma Saatleri
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="operational_hours" 
+                                       name="operational_hours" required placeholder="örn., 8760">
+                                <div class="form-text">Toplam çalışma saatleri</div>
+                            </div>
+
+                            <!-- Error Codes -->
+                            <div class="col-md-6 mb-3">
+                                <label for="error_codes" class="form-label">
+                                    <i class="fas fa-bug me-1"></i>Hata Kodları (Son 30 Gün)
+                                </label>
+                                <input type="number" class="form-control" id="error_codes" 
+                                       name="error_codes" required placeholder="örn., 5" min="0">
+                                <div class="form-text">Son 30 gündeki hata kodu sayısı</div>
+                            </div>
+
+                            <!-- Oil Level -->
+                            <div class="col-md-6 mb-3">
+                                <label for="oil_level" class="form-label">
+                                    <i class="fas fa-oil-can me-1"></i>Yağ Seviyesi (%)
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="oil_level" 
+                                       name="oil_level" required placeholder="örn., 85.5" min="0" max="100">
+                                <div class="form-text">Yağ seviyesi yüzdesi</div>
+                            </div>
+
+                            <!-- Coolant Level -->
+                            <div class="col-md-6 mb-3">
+                                <label for="coolant_level" class="form-label">
+                                    <i class="fas fa-tint me-1"></i>Soğutucu Seviyesi (%)
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="coolant_level" 
+                                       name="coolant_level" required placeholder="örn., 78.2" min="0" max="100">
+                                <div class="form-text">Soğutucu seviyesi yüzdesi</div>
+                            </div>
+
+                            <!-- Maintenance History Count -->
+                            <div class="col-md-6 mb-3">
+                                <label for="maintenance_count" class="form-label">
+                                    <i class="fas fa-tools me-1"></i>Bakım Geçmişi Sayısı
+                                </label>
+                                <input type="number" class="form-control" id="maintenance_count" 
+                                       name="maintenance_count" required placeholder="örn., 12" min="0">
+                                <div class="form-text">Yapılan bakım sayısı</div>
+                            </div>
+
+                            <!-- Failure History Count -->
+                            <div class="col-md-6 mb-3">
+                                <label for="failure_count" class="form-label">
+                                    <i class="fas fa-exclamation-circle me-1"></i>Arıza Geçmişi Sayısı
+                                </label>
+                                <input type="number" class="form-control" id="failure_count" 
+                                       name="failure_count" required placeholder="örn., 3" min="0">
+                                <div class="form-text">Önceki arıza sayısı</div>
+                            </div>
+
+                            <!-- Machine Type -->
+                            <div class="col-md-6 mb-3">
+                                <label for="machine_type" class="form-label">
+                                    <i class="fas fa-cog me-1"></i>Makine Tipi
+                                </label>
+                                <select class="form-select" id="machine_type" name="machine_type" required>
+                                    <option value="">Makine Tipi Seçin</option>
+                                    <option value="3D_Printer">3D Printer</option>
+                                    <option value="AGV">AGV</option>
+                                    <option value="Automated_Screwdriver">Automated Screwdriver</option>
+                                    <option value="Boiler">Boiler</option>
+                                    <option value="CMM">CMM</option>
+                                    <option value="CNC_Lathe">CNC Lathe</option>
+                                    <option value="CNC_Mill">CNC Mill</option>
+                                    <option value="Carton_Former">Carton Former</option>
+                                    <option value="Compressor">Compressor</option>
+                                    <option value="Conveyor_Belt">Conveyor Belt</option>
+                                    <option value="Crane">Crane</option>
+                                    <option value="Dryer">Dryer</option>
+                                    <option value="Forklift_Electric">Electric Forklift</option>
+                                    <option value="Furnace">Furnace</option>
+                                    <option value="Grinder">Grinder</option>
+                                    <option value="Heat_Exchanger">Heat Exchanger</option>
+                                    <option value="Hydraulic_Press">Hydraulic Press</option>
+                                    <option value="Industrial_Chiller">Industrial Chiller</option>
+                                    <option value="Injection_Molder">Injection Molder</option>
+                                    <option value="Labeler">Labeler</option>
+                                    <option value="Laser_Cutter">Laser Cutter</option>
+                                    <option value="Mixer">Mixer</option>
+                                    <option value="Palletizer">Palletizer</option>
+                                    <option value="Pick_and_Place">Pick and Place</option>
+                                    <option value="Press_Brake">Press Brake</option>
+                                    <option value="Pump">Pump</option>
+                                    <option value="Robot_Arm">Robot Arm</option>
+                                    <option value="Shrink_Wrapper">Shrink Wrapper</option>
+                                    <option value="Shuttle_System">Shuttle System</option>
+                                    <option value="Vacuum_Packer">Vacuum Packer</option>
+                                    <option value="Valve_Controller">Valve Controller</option>
+                                    <option value="Vision_System">Vision System</option>
+                                    <option value="XRay_Inspector">X-Ray Inspector</option>
+                                </select>
+                                <div class="form-text">Makine tipini seçin</div>
+                            </div>
+
+                            <!-- AI Override Events -->
+                            <div class="col-md-6 mb-3">
+                                <label for="ai_override_events" class="form-label">
+                                    <i class="fas fa-robot me-1"></i>AI Müdahale Olayları
+                                </label>
+                                <input type="number" class="form-control" id="ai_override_events" 
+                                       name="ai_override_events" placeholder="örn., 2" min="0" value="0">
+                                <div class="form-text">AI sistem müdahale sayısı</div>
+                            </div>
+
+                            <!-- Installation Year -->
+                            <div class="col-md-6 mb-3">
+                                <label for="installation_year" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Kurulum Yılı
+                                </label>
+                                <input type="number" class="form-control" id="installation_year" 
+                                       name="installation_year" placeholder="örn., 2020" min="1990" max="2025" value="2020">
+                                <div class="form-text">Makinenin kurulum yılı</div>
+                            </div>
+
+                            <!-- Last Maintenance Days Ago -->
+                            <div class="col-md-6 mb-3">
+                                <label for="last_maintenance_days_ago" class="form-label">
+                                    <i class="fas fa-wrench me-1"></i>Son Bakım (Gün Önce)
+                                </label>
+                                <input type="number" class="form-control" id="last_maintenance_days_ago" 
+                                       name="last_maintenance_days_ago" placeholder="örn., 30" min="0" value="30">
+                                <div class="form-text">Son bakımdan bu yana geçen gün</div>
+                            </div>
+
+                            <!-- Sound Level -->
+                            <div class="col-md-6 mb-3">
+                                <label for="sound_db" class="form-label">
+                                    <i class="fas fa-volume-up me-1"></i>Ses Seviyesi (dB)
+                                </label>
+                                <input type="number" step="0.1" class="form-control" id="sound_db" 
+                                       name="sound_db" placeholder="örn., 65.5" min="0" max="150" value="50">
+                                <div class="form-text">Makine ses seviyesi (desibel)</div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="reset" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-undo me-1"></i>Formu Sıfırla
+                            </button>
+                            <button type="submit" class="btn btn-info" id="submitBtn">
+                                <i class="fas fa-calculator me-1"></i>Arızayı Tahmin Et
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

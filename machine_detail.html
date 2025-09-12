@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}{{ machine.machine_id }} - Machine Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Machine Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-6 fw-bold">
+                        <i class="fas fa-cog text-info me-3"></i>
+                        {{ machine.machine_id }}
+                    </h1>
+                    <p class="text-muted">
+                        Type: <span class="badge bg-secondary">{{ machine.machine_type }}</span> |
+                        Created: {{ machine.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ url_for('history') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Back to History
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-info">
+                        <i class="fas fa-plus me-1"></i>New Prediction
+                    </a>
+                </div>
+            </div>
+
+            {% if predictions %}
+            <!-- Latest Prediction Summary -->
+            {% set latest = predictions[0] %}
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card {% if latest.failure_within_7_days %}border-danger{% else %}border-success{% endif %}">
+                        <div class="card-body text-center">
+                            {% if latest.failure_within_7_days %}
+                                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                                <h5 class="text-danger">High Risk</h5>
+                                <p>Failure predicted within 7 days</p>
+                            {% else %}
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h5 class="text-success">Normal Operation</h5>
+                                <p>No immediate failure risk</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            {% set prob_percent = (latest.failure_probability * 100) %}
+                            <i class="fas fa-percentage fa-3x 
+                               {% if prob_percent >= 70 %}text-danger
+                               {% elif prob_percent >= 40 %}text-warning
+                               {% else %}text-success{% endif %} mb-3"></i>
+                            <h5>Failure Probability</h5>
+                            <h3 class="{% if prob_percent >= 70 %}text-danger
+                               {% elif prob_percent >= 40 %}text-warning
+                               {% else %}text-success{% endif %}">
+                                {{ "%.1f"|format(prob_percent) }}%
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            {% set rul_days = latest.remaining_useful_life_days %}
+                            <i class="fas fa-calendar-alt fa-3x 
+                               {% if rul_days <= 7 %}text-danger
+                               {% elif rul_days <= 30 %}text-warning
+                               {% else %}text-info{% endif %} mb-3"></i>
+                            <h5>Remaining Life</h5>
+                            <h3 class="{% if rul_days <= 7 %}text-danger
+                               {% elif rul_days <= 30 %}text-warning
+                               {% else %}text-info{% endif %}">
+                                {{ rul_days }} days
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction History Chart Area -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Prediction Trends
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="predictionChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed History Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Detailed Prediction History
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Temperature</th>
+                                    <th>Vibration</th>
+                                    <th>Power</th>
+                                    <th>Hours</th>
+                                    <th>Errors</th>
+                                    <th>Oil</th>
+                                    <th>Coolant</th>
+                                    <th>Failure Risk</th>
+                                    <th>Probability</th>
+                                    <th>RUL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in predictions %}
+                                <tr>
+                                    <td>
+                                        <small>{{ prediction.prediction_date.strftime('%m-%d %H:%M') }}</small>
+                                    </td>
+                                    <td>{{ prediction.temperature_c }}°C</td>
+                                    <td>{{ prediction.vibration_mms }} mm/s</td>
+                                    <td>{{ prediction.power_consumption_kw }} kW</td>
+                                    <td>{{ prediction.operational_hours }}</td>
+                                    <td>{{ prediction.error_codes_last_30_days }}</td>
+                                    <td>{{ prediction.oil_level_pct }}%</td>
+                                    <td>{{ prediction.coolant_level_pct }}%</td>
+                                    <td>
+                                        {% if prediction.failure_within_7_days %}
+                                            <span class="badge bg-danger">High</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set prob_percent = (prediction.failure_probability * 100) %}
+                                        <span class="{% if prob_percent >= 70 %}text-danger{% elif prob_percent >= 40 %}text-warning{% else %}text-success{% endif %}">
+                                            {{ "%.1f"|format(prob_percent) }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% set rul_days = prediction.remaining_useful_life_days %}
+                                        <span class="{% if rul_days <= 7 %}text-danger{% elif rul_days <= 30 %}text-warning{% else %}text-info{% endif %}">
+                                            {{ rul_days }}d
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- No Predictions -->
+            <div class="text-center py-5">
+                <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">No Predictions for This Machine</h3>
+                <p class="text-muted mb-4">Start monitoring this machine by making a prediction.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-info btn-lg">
+                    <i class="fas fa-plus me-2"></i>Make Prediction
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if predictions %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Prediction trend chart
+const ctx = document.getElementById('predictionChart').getContext('2d');
+const predictions = {{ predictions | tojson }};
+
+// Prepare data for chart
+const labels = predictions.slice().reverse().map(p => {
+    const date = new Date(p.prediction_date);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+});
+
+const failureProbability = predictions.slice().reverse().map(p => p.failure_probability * 100);
+const remainingLife = predictions.slice().reverse().map(p => p.remaining_useful_life_days);
+
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Failure Probability (%)',
+            data: failureProbability,
+            borderColor: 'rgb(220, 53, 69)',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            yAxisID: 'y'
+        }, {
+            label: 'Remaining Life (days)',
+            data: remainingLife,
+            borderColor: 'rgb(13, 202, 240)',
+            backgroundColor: 'rgba(13, 202, 240, 0.1)',
+            yAxisID: 'y1'
+        }]
+    },
+    options: {
+        responsive: true,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        scales: {
+            x: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'Time'
+                }
+            },
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'Failure Probability (%)'
+                },
+                min: 0,
+                max: 100
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'Remaining Life (days)'
+                },
+                grid: {
+                    drawOnChartArea: false,
+                },
+                min: 0
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

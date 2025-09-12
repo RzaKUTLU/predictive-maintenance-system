@@ -1,0 +1,187 @@
+/* Custom styles for Predictive Maintenance System */
+
+/* Hero section styling */
+.hero-section {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.1) 0%, rgba(108, 117, 125, 0.1) 100%);
+    border-radius: 10px;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 0.2rem rgba(13, 202, 240, 0.25);
+}
+
+.form-select:focus {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 0.2rem rgba(13, 202, 240, 0.25);
+}
+
+/* Loading button animation */
+.btn.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+/* Progress bar animations */
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Results cards */
+.border-danger {
+    border-color: var(--bs-danger) !important;
+    border-width: 2px !important;
+}
+
+.border-success {
+    border-color: var(--bs-success) !important;
+    border-width: 2px !important;
+}
+
+/* Code syntax highlighting */
+pre {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+code {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.875em;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Table styling */
+.table th {
+    border-top: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+}
+
+.table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section .display-1 {
+        font-size: 4rem;
+    }
+    
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-body .fa-4x {
+        font-size: 2.5em;
+    }
+    
+    .display-4 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    footer,
+    .btn,
+    .alert {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+    
+    .text-danger,
+    .text-warning,
+    .text-success,
+    .text-info {
+        color: #000 !important;
+    }
+}
+
+/* Animation for icons */
+.fa-robot,
+.fa-industry {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Custom alert styling */
+.alert {
+    border: none;
+    border-left: 4px solid;
+}
+
+.alert-danger {
+    border-left-color: var(--bs-danger);
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.alert-warning {
+    border-left-color: var(--bs-warning);
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.alert-success {
+    border-left-color: var(--bs-success);
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+.alert-info {
+    border-left-color: var(--bs-info);
+    background-color: rgba(13, 202, 240, 0.1);
+}

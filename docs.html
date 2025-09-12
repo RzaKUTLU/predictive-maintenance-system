@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - Predictive Maintenance{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-book text-info me-3"></i>
+                    API Documentation
+                </h1>
+                <p class="lead text-muted">Complete guide for using the Predictive Maintenance API</p>
+            </div>
+
+            <!-- Quick Start -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-rocket me-2"></i>Quick Start
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p>The Predictive Maintenance API provides machine learning-powered predictions for equipment failure analysis.</p>
+                    <p><strong>Base URL:</strong> <code>{{ request.url_root }}</code></p>
+                    <p><strong>Content-Type:</strong> <code>application/json</code></p>
+                </div>
+            </div>
+
+            <!-- Endpoints -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-link me-2"></i>API Endpoints
+                    </h3>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Predict Endpoint -->
+                    <div class="mb-4">
+                        <h4><span class="badge bg-success">POST</span> /predict</h4>
+                        <p>Main prediction endpoint for machine failure analysis.</p>
+                        
+                        <h6>Request Body:</h6>
+                        <pre><code class="language-json">{
+  "Temperature_C": 75.5,
+  "Vibration_mms": 4.2,
+  "Power_Consumption_kW": 150.3,
+  "Operational_Hours": 8760,
+  "Error_Codes_Last_30_Days": 5,
+  "Oil_Level_pct": 85.5,
+  "Coolant_Level_pct": 78.2,
+  "Maintenance_History_Count": 12,
+  "Failure_History_Count": 3,
+  "Machine_Type": "Type_A"
+}</code></pre>
+
+                        <h6>Response:</h6>
+                        <pre><code class="language-json">{
+  "Failure_Within_7_Days": false,
+  "Failure_Probability": 0.2345,
+  "Remaining_Useful_Life_days": 45.67
+}</code></pre>
+                    </div>
+
+                    <!-- API Status Endpoint -->
+                    <div class="mb-4">
+                        <h4><span class="badge bg-info">GET</span> /api_status</h4>
+                        <p>Check API health and model loading status.</p>
+                        
+                        <h6>Response:</h6>
+                        <pre><code class="language-json">{
+  "status": "running",
+  "models_loaded": true,
+  "message": "🔧 Predictive Maintenance API is Running!"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parameters -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>Input Parameters
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Temperature_C</code></td>
+                                    <td>float</td>
+                                    <td>Operating temperature in Celsius</td>
+                                    <td>75.5</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Vibration_mms</code></td>
+                                    <td>float</td>
+                                    <td>Vibration level in mm/s</td>
+                                    <td>4.2</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Power_Consumption_kW</code></td>
+                                    <td>float</td>
+                                    <td>Power consumption in kilowatts</td>
+                                    <td>150.3</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Operational_Hours</code></td>
+                                    <td>float</td>
+                                    <td>Total operational hours</td>
+                                    <td>8760</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Error_Codes_Last_30_Days</code></td>
+                                    <td>int</td>
+                                    <td>Number of error codes in last 30 days</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Oil_Level_pct</code></td>
+                                    <td>float</td>
+                                    <td>Oil level percentage (0-100)</td>
+                                    <td>85.5</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Coolant_Level_pct</code></td>
+                                    <td>float</td>
+                                    <td>Coolant level percentage (0-100)</td>
+                                    <td>78.2</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Maintenance_History_Count</code></td>
+                                    <td>int</td>
+                                    <td>Number of maintenance activities</td>
+                                    <td>12</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Failure_History_Count</code></td>
+                                    <td>int</td>
+                                    <td>Number of previous failures</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Machine_Type</code></td>
+                                    <td>string</td>
+                                    <td>Machine type (3D_Printer, AGV, CNC_Lathe, etc.)</td>
+                                    <td>"3D_Printer"</td>
+                                </tr>
+                                <tr>
+                                    <td><code>AI_Override_Events</code></td>
+                                    <td>int</td>
+                                    <td>Number of AI override events</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Installation_Year</code></td>
+                                    <td>int</td>
+                                    <td>Year of machine installation</td>
+                                    <td>2020</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Last_Maintenance_Days_Ago</code></td>
+                                    <td>int</td>
+                                    <td>Days since last maintenance</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Sound_dB</code></td>
+                                    <td>float</td>
+                                    <td>Sound level in decibels</td>
+                                    <td>65.5</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Format -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Response Format
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Failure_Within_7_Days</code></td>
+                                    <td>boolean</td>
+                                    <td>Whether machine is predicted to fail within 7 days</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Failure_Probability</code></td>
+                                    <td>float</td>
+                                    <td>Probability of failure (0.0 to 1.0)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Remaining_Useful_Life_days</code></td>
+                                    <td>float</td>
+                                    <td>Estimated remaining useful life in days</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Examples -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-code me-2"></i>Code Examples
+                    </h3>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Single Prediction -->
+                    <h4 class="text-primary mb-3">Single Prediction</h4>
+                    
+                    <!-- Python Example -->
+                    <h5>Python - Single</h5>
+                    <pre><code class="language-python">import requests
+import json
+
+url = "{{ request.url_root }}predict"
+data = {
+    "Temperature_C": 75.5,
+    "Vibration_mms": 4.2,
+    "Power_Consumption_kW": 150.3,
+    "Operational_Hours": 8760,
+    "Error_Codes_Last_30_Days": 5,
+    "Oil_Level_pct": 85.5,
+    "Coolant_Level_pct": 78.2,
+    "Maintenance_History_Count": 12,
+    "Failure_History_Count": 3,
+    "Machine_Type": "3D_Printer",
+    "AI_Override_Events": 0,
+    "Installation_Year": 2020,
+    "Last_Maintenance_Days_Ago": 30,
+    "Sound_dB": 65.5
+}
+
+response = requests.post(url, json=data)
+result = response.json()
+print(f"Failure in 7 days: {result['Failure_Within_7_Days']}")
+print(f"Failure probability: {result['Failure_Probability']:.2%}")
+print(f"Remaining life: {result['Remaining_Useful_Life_days']} days")
+</code></pre>
+
+                    <!-- cURL Example -->
+                    <h5 class="mt-4">cURL</h5>
+                    <pre><code class="language-bash">curl -X POST {{ request.url_root }}predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Temperature_C": 75.5,
+    "Vibration_mms": 4.2,
+    "Power_Consumption_kW": 150.3,
+    "Operational_Hours": 8760,
+    "Error_Codes_Last_30_Days": 5,
+    "Oil_Level_pct": 85.5,
+    "Coolant_Level_pct": 78.2,
+    "Maintenance_History_Count": 12,
+    "Failure_History_Count": 3,
+    "Machine_Type": "3D_Printer",
+    "AI_Override_Events": 0,
+    "Installation_Year": 2020,
+    "Last_Maintenance_Days_Ago": 30,
+    "Sound_dB": 65.5
+  }'
+</code></pre>
+
+                    <!-- JavaScript Example -->
+                    <h5 class="mt-4">JavaScript - Single</h5>
+                    <pre><code class="language-javascript">const data = {
+    "Temperature_C": 75.5,
+    "Vibration_mms": 4.2,
+    "Power_Consumption_kW": 150.3,
+    "Operational_Hours": 8760,
+    "Error_Codes_Last_30_Days": 5,
+    "Oil_Level_pct": 85.5,
+    "Coolant_Level_pct": 78.2,
+    "Maintenance_History_Count": 12,
+    "Failure_History_Count": 3,
+    "Machine_Type": "3D_Printer",
+    "AI_Override_Events": 0,
+    "Installation_Year": 2020,
+    "Last_Maintenance_Days_Ago": 30,
+    "Sound_dB": 65.5
+};
+
+fetch('{{ request.url_root }}predict', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+})
+.then(response => response.json())
+.then(result => {
+    console.log('Failure in 7 days:', result.Failure_Within_7_Days);
+    console.log('Failure probability:', result.Failure_Probability);
+    console.log('Remaining life:', result.Remaining_Useful_Life_days, 'days');
+});
+</code></pre>
+
+                    <!-- Batch Processing Examples -->
+                    <h4 class="text-success mb-3 mt-5">Batch Processing (Multiple Predictions)</h4>
+                    
+                    <!-- Python Batch Example -->
+                    <h5>Python - Batch</h5>
+                    <pre><code class="language-python">import requests
+import json
+
+url = "{{ request.url_root }}predict"
+batch_data = [
+    {
+        "Temperature_C": 75.5,
+        "Vibration_mms": 4.2,
+        "Power_Consumption_kW": 150.3,
+        "Operational_Hours": 8760,
+        "Error_Codes_Last_30_Days": 5,
+        "Oil_Level_pct": 85.5,
+        "Coolant_Level_pct": 78.2,
+        "Maintenance_History_Count": 12,
+        "Failure_History_Count": 3,
+        "Machine_Type": "3D_Printer",
+        "AI_Override_Events": 0,
+        "Installation_Year": 2020,
+        "Last_Maintenance_Days_Ago": 30,
+        "Sound_dB": 65.5
+    },
+    {
+        "Temperature_C": 82.1,
+        "Vibration_mms": 6.8,
+        "Power_Consumption_kW": 175.2,
+        "Operational_Hours": 12000,
+        "Error_Codes_Last_30_Days": 8,
+        "Oil_Level_pct": 72.3,
+        "Coolant_Level_pct": 68.9,
+        "Maintenance_History_Count": 8,
+        "Failure_History_Count": 5,
+        "Machine_Type": "CNC_Lathe",
+        "AI_Override_Events": 2,
+        "Installation_Year": 2018,
+        "Last_Maintenance_Days_Ago": 45,
+        "Sound_dB": 78.2
+    }
+]
+
+response = requests.post(url, json=batch_data)
+result = response.json()
+
+print(f"Total predictions: {result['total_predictions']}")
+print(f"Successful: {result['successful_predictions']}")
+
+for prediction in result['batch_results']:
+    idx = prediction['batch_index']
+    print(f"\nMachine {idx}:")
+    if 'error' not in prediction:
+        print(f"  Failure in 7 days: {prediction['Failure_Within_7_Days']}")
+        print(f"  Failure probability: {prediction['Failure_Probability']:.2%}")
+        print(f"  Remaining life: {prediction['Remaining_Useful_Life_days']} days")
+    else:
+        print(f"  Error: {prediction['error']}")
+</code></pre>
+
+                    <!-- cURL Batch Example -->
+                    <h5 class="mt-4">cURL - Batch</h5>
+                    <pre><code class="language-bash">curl -X POST {{ request.url_root }}predict \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "Temperature_C": 75.5,
+      "Vibration_mms": 4.2,
+      "Power_Consumption_kW": 150.3,
+      "Operational_Hours": 8760,
+      "Error_Codes_Last_30_Days": 5,
+      "Oil_Level_pct": 85.5,
+      "Coolant_Level_pct": 78.2,
+      "Maintenance_History_Count": 12,
+      "Failure_History_Count": 3,
+      "Machine_Type": "3D_Printer",
+      "AI_Override_Events": 0,
+      "Installation_Year": 2020,
+      "Last_Maintenance_Days_Ago": 30,
+      "Sound_dB": 65.5
+    },
+    {
+      "Temperature_C": 82.1,
+      "Vibration_mms": 6.8,
+      "Power_Consumption_kW": 175.2,
+      "Operational_Hours": 12000,
+      "Error_Codes_Last_30_Days": 8,
+      "Oil_Level_pct": 72.3,
+      "Coolant_Level_pct": 68.9,
+      "Maintenance_History_Count": 8,
+      "Failure_History_Count": 5,
+      "Machine_Type": "CNC_Lathe",
+      "AI_Override_Events": 2,
+      "Installation_Year": 2018,
+      "Last_Maintenance_Days_Ago": 45,
+      "Sound_dB": 78.2
+    }
+  ]'
+</code></pre>
+
+                    <!-- JavaScript Batch Example -->
+                    <h5 class="mt-4">JavaScript - Batch</h5>
+                    <pre><code class="language-javascript">const batchData = [
+    {
+        "Temperature_C": 75.5,
+        "Vibration_mms": 4.2,
+        "Power_Consumption_kW": 150.3,
+        "Operational_Hours": 8760,
+        "Error_Codes_Last_30_Days": 5,
+        "Oil_Level_pct": 85.5,
+        "Coolant_Level_pct": 78.2,
+        "Maintenance_History_Count": 12,
+        "Failure_History_Count": 3,
+        "Machine_Type": "3D_Printer",
+        "AI_Override_Events": 0,
+        "Installation_Year": 2020,
+        "Last_Maintenance_Days_Ago": 30,
+        "Sound_dB": 65.5
+    },
+    {
+        "Temperature_C": 82.1,
+        "Vibration_mms": 6.8,
+        "Power_Consumption_kW": 175.2,
+        "Operational_Hours": 12000,
+        "Error_Codes_Last_30_Days": 8,
+        "Oil_Level_pct": 72.3,
+        "Coolant_Level_pct": 68.9,
+        "Maintenance_History_Count": 8,
+        "Failure_History_Count": 5,
+        "Machine_Type": "CNC_Lathe",
+        "AI_Override_Events": 2,
+        "Installation_Year": 2018,
+        "Last_Maintenance_Days_Ago": 45,
+        "Sound_dB": 78.2
+    }
+];
+
+fetch('{{ request.url_root }}predict', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(batchData)
+})
+.then(response => response.json())
+.then(result => {
+    console.log(`Total predictions: ${result.total_predictions}`);
+    console.log(`Successful: ${result.successful_predictions}`);
+    
+    result.batch_results.forEach(prediction => {
+        console.log(`\nMachine ${prediction.batch_index}:`);
+        if (!prediction.error) {
+            console.log(`  Failure in 7 days: ${prediction.Failure_Within_7_Days}`);
+            console.log(`  Failure probability: ${prediction.Failure_Probability}`);
+            console.log(`  Remaining life: ${prediction.Remaining_Useful_Life_days} days`);
+        } else {
+            console.log(`  Error: ${prediction.error}`);
+        }
+    });
+});
+</code></pre>
+                </div>
+            </div>
+
+            <!-- Error Handling -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Error Handling
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p>The API returns appropriate HTTP status codes and error messages:</p>
+                    <ul>
+                        <li><strong>200 OK:</strong> Successful prediction</li>
+                        <li><strong>400 Bad Request:</strong> Invalid input data</li>
+                        <li><strong>500 Internal Server Error:</strong> Server or model error</li>
+                    </ul>
+                    
+                    <h6>Error Response Format:</h6>
+                    <pre><code class="language-json">{
+  "error": "Detailed error message"
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-info btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

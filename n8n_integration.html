@@ -1,0 +1,528 @@
+{% extends "base.html" %}
+
+{% block title %}n8n Integration Guide - Predictive Maintenance{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-plug text-info me-3"></i>
+                    n8n Integration Guide
+                </h1>
+                <p class="lead text-muted">Complete setup guide for connecting your n8n workflows to the Predictive Maintenance API</p>
+            </div>
+
+            <!-- API Endpoint Selection -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-route me-2"></i>API Endpoint Seçimi
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Normal API (Tüm Parametreler)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Endpoint:</strong> <code>/predict</code></p>
+                                    <p><strong>Kullanım:</strong> Çalışma saatleri dahil tüm parametreler</p>
+                                    <p><strong>Avantaj:</strong> En doğru tahmin sonuçları</p>
+                                    <p><strong>Dezavantaj:</strong> Çalışma saatleri verisi gerekli</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">Çalışma Saatleri Olmadan</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Endpoint:</strong> <code>/predict_without_hours</code></p>
+                                    <p><strong>Kullanım:</strong> Çalışma saatleri olmadan tahmin</p>
+                                    <p><strong>Avantaj:</strong> Çalışma saatleri verisi gerektirmez</p>
+                                    <p><strong>Dezavantaj:</strong> Sabit 25,000 saat varsayımı</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Setup -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-rocket me-2"></i>n8n Hızlı Kurulum
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>HTTP Request Node Ayarları:</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Method:</strong> <span class="badge bg-success">POST</span></li>
+                                <li><strong>URL (Normal):</strong> <code>{{ request.url_root }}predict</code></li>
+                                <li><strong>URL (Çalışma Saatleri Olmadan):</strong> <code>{{ request.url_root }}predict_without_hours</code></li>
+                                <li><strong>Send Body:</strong> <span class="text-success">✅ Enabled</span></li>
+                                <li><strong>Content-Type:</strong> <code>application/json</code></li>
+                                <li><strong>Authentication:</strong> None required</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Response Format:</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Status:</strong> 200 OK</li>
+                                <li><strong>Type:</strong> JSON Object</li>
+                                <li><strong>Fields:</strong> 3 prediction values</li>
+                                <li><strong>Error Handling:</strong> 500 on error</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample JSON Body -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-code me-2"></i>n8n için JSON Örnekleri
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#normal-api" type="button" role="tab">Normal API</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#without-hours" type="button" role="tab">Çalışma Saatleri Olmadan</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="normal-api" role="tabpanel">
+                            <h6>Normal API için JSON yapısı (/predict):</h6>
+                            <pre><code id="normalJson">{
+  "Temperature_C": 75.5,
+  "Vibration_mms": 4.2,
+  "Power_Consumption_kW": 150.3,
+  "Operational_Hours": 8760,
+  "Error_Codes_Last_30_Days": 5,
+  "Oil_Level_pct": 85.5,
+  "Coolant_Level_pct": 78.2,
+  "Maintenance_History_Count": 12,
+  "Failure_History_Count": 3,
+  "Machine_Type": "3D_Printer",
+  "AI_Override_Events": 0,
+  "Installation_Year": 2020,
+  "Last_Maintenance_Days_Ago": 30,
+  "Sound_dB": 65.5
+}</code></pre>
+                            <button class="btn btn-outline-info mt-2" onclick="copyToClipboard('normalJson')">
+                                <i class="fas fa-copy me-1"></i>Normal API JSON Kopyala
+                            </button>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="without-hours" role="tabpanel">
+                            <h6>Çalışma Saatleri Olmadan API için JSON yapısı (/predict_without_hours):</h6>
+                            <pre><code id="withoutHoursJson">{
+  "Temperature_C": 75.5,
+  "Vibration_mms": 4.2,
+  "Power_Consumption_kW": 150.3,
+  "Error_Codes_Last_30_Days": 5,
+  "Oil_Level_pct": 85.5,
+  "Coolant_Level_pct": 78.2,
+  "Maintenance_History_Count": 12,
+  "Failure_History_Count": 3,
+  "Machine_Type": "3D_Printer",
+  "AI_Override_Events": 0,
+  "Installation_Year": 2020,
+  "Last_Maintenance_Days_Ago": 30,
+  "Sound_dB": 65.5
+}</code></pre>
+                            <div class="alert alert-info mt-2" style="color: #212529 !important; background-color: #d1ecf1 !important; border-color: #bee5eb !important;">
+                                <i class="fas fa-info-circle me-2" style="color: #0c5460 !important;"></i>
+                                <strong style="color: #0c5460 !important;">Not:</strong> Bu API'de Operational_Hours parametresi gönderilmez. 
+                                Sistem otomatik olarak 25,000 saat değerini kullanır.
+                            </div>
+                            <button class="btn btn-outline-warning mt-2" onclick="copyToClipboard('withoutHoursJson')">
+                                <i class="fas fa-copy me-1"></i>Çalışma Saatleri Olmadan JSON Kopyala
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decision Guide -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Hangi API'yi Kullanmalıyım?
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">Normal API (/predict) Kullan</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li>Çalışma saatleri verisi mevcut</li>
+                                        <li>En yüksek doğruluk gerekli</li>
+                                        <li>Prodüksiyon ortamı</li>
+                                        <li>Kritik kararlar alınacak</li>
+                                        <li>Makine çalışma saatleri güvenilir</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0">Çalışma Saatleri Olmadan API (/predict_without_hours) Kullan</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li>Çalışma saatleri verisi yok</li>
+                                        <li>Test/geliştirme ortamı</li>
+                                        <li>Hızlı tahmiller gerekli</li>
+                                        <li>Sensör verilerine odaklan</li>
+                                        <li>Operasyonel saatler güvenilmez</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3" style="color: #212529 !important; background-color: #d1ecf1 !important; border-color: #bee5eb !important;">
+                        <i class="fas fa-lightbulb me-2" style="color: #0c5460 !important;"></i>
+                        <strong style="color: #0c5460 !important;">Öneri:</strong> Çalışma saatleri veriniz varsa normal API'yi kullanın. 
+                        Yoksa veya güvenilir değilse çalışma saatleri olmadan API'yi tercih edin.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Data Mapping -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exchange-alt me-2"></i>n8n için Dinamik Veri Eşleme
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p>Use these expressions in your n8n workflow to map dynamic data:</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>n8n Expression Example</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Temperature_C</code></td>
+                                    <td><code>{{ "{{" }} $json.sensor_data.temperature {{ "}}" }}</code></td>
+                                    <td>Map from sensor temperature reading</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Vibration_mms</code></td>
+                                    <td><code>{{ "{{" }} $json.vibration_sensor {{ "}}" }}</code></td>
+                                    <td>Map from vibration sensor data</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Power_Consumption_kW</code></td>
+                                    <td><code>{{ "{{" }} $json.power_meter.current_kw {{ "}}" }}</code></td>
+                                    <td>Map from power consumption meter</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Operational_Hours</code></td>
+                                    <td><code>{{ "{{" }} $json.machine.total_hours {{ "}}" }}</code></td>
+                                    <td>Map from machine runtime counter (Normal API için)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Machine_Type</code></td>
+                                    <td><code>{{ "{{" }} $json.machine.type || "Type_A" {{ "}}" }}</code></td>
+                                    <td>Map machine type with fallback</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Handling -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-download me-2"></i>Response Handling in n8n
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Success Response (200):</h6>
+                            <pre><code>{
+  "Failure_Within_7_Days": false,
+  "Failure_Probability": 0.2345,
+  "Remaining_Useful_Life_days": 45.67
+}</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Error Response (500):</h6>
+                            <pre><code>{
+  "error": "Detailed error message"
+}</code></pre>
+                        </div>
+                    </div>
+                    <h6 class="mt-4">Access Response Data in n8n:</h6>
+                    <ul>
+                        <li><code>{{ "{{" }} $json.Failure_Within_7_Days {{ "}}" }}</code> - Boolean: true/false</li>
+                        <li><code>{{ "{{" }} $json.Failure_Probability {{ "}}" }}</code> - Float: 0.0 to 1.0</li>
+                        <li><code>{{ "{{" }} $json.Remaining_Useful_Life_days {{ "}}" }}</code> - Float: days remaining</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Workflow Examples -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-sitemap me-2"></i>n8n Workflow Examples
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="workflowExamples">
+                        <!-- Basic Monitoring -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingBasic">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBasic">
+                                    Basic Machine Monitoring
+                                </button>
+                            </h2>
+                            <div id="collapseBasic" class="accordion-collapse collapse show" data-bs-parent="#workflowExamples">
+                                <div class="accordion-body">
+                                    <p><strong>Workflow:</strong> Schedule → Get Sensor Data → Predict → Send Alert</p>
+                                    <ol>
+                                        <li><strong>Cron Node:</strong> Schedule every hour</li>
+                                        <li><strong>HTTP Request:</strong> Get machine sensor data</li>
+                                        <li><strong>HTTP Request:</strong> Call prediction API</li>
+                                        <li><strong>IF Node:</strong> Check if <code>Failure_Within_7_Days == true</code></li>
+                                        <li><strong>Email/Slack:</strong> Send alert if high risk</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Alert System -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingAdvanced">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdvanced">
+                                    Advanced Alert System
+                                </button>
+                            </h2>
+                            <div id="collapseAdvanced" class="accordion-collapse collapse" data-bs-parent="#workflowExamples">
+                                <div class="accordion-body">
+                                    <p><strong>Workflow:</strong> Multiple Conditions + Database Logging</p>
+                                    <ol>
+                                        <li><strong>Webhook:</strong> Receive sensor data</li>
+                                        <li><strong>HTTP Request:</strong> Call prediction API</li>
+                                        <li><strong>Switch Node:</strong> Route based on probability levels:
+                                            <ul>
+                                                <li>High Risk (>70%): Immediate alert</li>
+                                                <li>Medium Risk (40-70%): Warning notification</li>
+                                                <li>Low Risk (<40%): Log only</li>
+                                            </ul>
+                                        </li>
+                                        <li><strong>Database:</strong> Log all predictions</li>
+                                        <li><strong>Multiple Outputs:</strong> Email, Slack, SMS based on severity</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IoT Integration -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingIoT">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIoT">
+                                    IoT Sensor Integration
+                                </button>
+                            </h2>
+                            <div id="collapseIoT" class="accordion-collapse collapse" data-bs-parent="#workflowExamples">
+                                <div class="accordion-body">
+                                    <p><strong>Workflow:</strong> Real-time IoT Data Processing</p>
+                                    <ol>
+                                        <li><strong>MQTT Trigger:</strong> Listen to IoT sensor data</li>
+                                        <li><strong>Function Node:</strong> Transform and validate sensor data</li>
+                                        <li><strong>HTTP Request:</strong> Call prediction API with formatted data</li>
+                                        <li><strong>Switch Node:</strong> Handle different response scenarios</li>
+                                        <li><strong>InfluxDB/TimescaleDB:</strong> Store time-series prediction data</li>
+                                        <li><strong>Grafana Webhook:</strong> Update dashboard alerts</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-World Workflow Example -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-project-diagram me-2"></i>Gerçek Dünyada Workflow Örneği
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Aşağıdaki workflow örneği, makine verilerini işleyerek tahmin sonuçlarını farklı kanallara yönlendiren gerçek bir senaryo gösterir:</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-lg-12">
+                            <div class="bg-light p-3 rounded" style="color: #212529 !important; background-color: #f8f9fa !important;">
+                                <h5 class="mb-3" style="color: #212529 !important;">Workflow Bileşenleri:</h5>
+                                <ol style="color: #212529 !important;">
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">Manual Trigger:</strong> Test amacıyla manuel tetikleme</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">HTTP Request:</strong> Tahmin API'sine veri gönderme</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">Set Node (Timestamp):</strong> Zaman damgası ekleme</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">IF Node:</strong> Sonuçları koşula göre ayırma</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">Set Node (True/False):</strong> Farklı durumlar için veri hazırlama</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">Merge Node:</strong> Tüm sonuçları birleştirme</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">Google Sheets:</strong> Sonuçları tabloya kaydetme</li>
+                                    <li style="color: #212529 !important;"><strong style="color: #212529 !important;">Email:</strong> Kritik durumlar için bildirim</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h6>Workflow Mantığı:</h6>
+                            <ul>
+                                <li><strong>Veri Toplama:</strong> Makine sensör verilerini toplar</li>
+                                <li><strong>API Çağrısı:</strong> Tahmin API'sine POST isteği gönderir</li>
+                                <li><strong>Koşullu Yönlendirme:</strong> Arıza riski yüksekse alarma, düşükse kayıt işlemine yönlendirir</li>
+                                <li><strong>Kayıt:</strong> Tüm sonuçları Google Sheets'e kaydeder</li>
+                                <li><strong>Bildirim:</strong> Kritik durumlarda e-posta gönderir</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6">
+                            <h6>Kullanım Alanları:</h6>
+                            <ul>
+                                <li>Otomatik makine izleme</li>
+                                <li>Bakım planlaması</li>
+                                <li>Arıza öncesi uyarı sistemi</li>
+                                <li>Performans raporlaması</li>
+                                <li>Karar destek sistemi</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3" style="color: #212529 !important; background-color: #d1ecf1 !important; border-color: #bee5eb !important;">
+                        <i class="fas fa-lightbulb me-2" style="color: #0c5460 !important;"></i>
+                        <strong style="color: #0c5460 !important;">İpucu:</strong> Bu workflow'u kendi ihtiyaçlarınıza göre özelleştirebilirsiniz. Farklı eşik değerleri, ek bildirim kanalları veya veritabanı entegrasyonları ekleyebilirsiniz.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Handling -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Error Handling in n8n
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <h6>Recommended Error Handling Strategy:</h6>
+                    <ol>
+                        <li><strong>Set Error Workflow:</strong> Configure n8n to handle HTTP errors gracefully</li>
+                        <li><strong>Check Status Code:</strong> Use IF node to check response status</li>
+                        <li><strong>Retry Logic:</strong> Add retry mechanism for temporary failures</li>
+                        <li><strong>Fallback Actions:</strong> Define alternative actions when API is unavailable</li>
+                    </ol>
+                    
+                    <h6 class="mt-3">Common Error Scenarios:</h6>
+                    <ul>
+                        <li><strong>400 Bad Request:</strong> Invalid input data format</li>
+                        <li><strong>500 Internal Error:</strong> Model processing error</li>
+                        <li><strong>Network Timeout:</strong> API endpoint unavailable</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Testing -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-vial me-2"></i>Testing Your n8n Integration
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Test API Status:</h6>
+                            <p>First, verify the API is working:</p>
+                            <p><strong>URL:</strong> <code>{{ request.url_root }}api_status</code></p>
+                            <p><strong>Method:</strong> GET</p>
+                            <p><strong>Expected Response:</strong></p>
+                            <pre><code>{
+  "status": "running",
+  "models_loaded": true,
+  "message": "🔧 Predictive Maintenance API is Running!"
+}</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Test Prediction:</h6>
+                            <p>Use the sample JSON above with these test values:</p>
+                            <ul>
+                                <li>High risk scenario: Temperature > 90°C</li>
+                                <li>High vibration: > 8 mm/s</li>
+                                <li>Many errors: > 10 error codes</li>
+                                <li>Low oil/coolant: < 30%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="text-center">
+                <a href="{{ url_for('docs') }}" class="btn btn-outline-info btn-lg me-3">
+                    <i class="fas fa-book me-2"></i>Full API Documentation
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-info btn-lg">
+                    <i class="fas fa-play me-2"></i>Test the API
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        // Show success message
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-info');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-info');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Tahmin Sonuçları - Öngörülü Bakım{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Results Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-chart-line text-info me-3"></i>
+                    Tahmin Sonuçları
+                </h1>
+                <p class="lead text-muted">Sağlanan parametrelere göre makine arıza analizi</p>
+            </div>
+
+            {% if success and result %}
+            <!-- Main Results Cards -->
+            <div class="row mb-5">
+                <!-- Failure Prediction -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 {% if result.Failure_Within_7_Days %}border-danger{% else %}border-success{% endif %}">
+                        <div class="card-body text-center">
+                            {% if result.Failure_Within_7_Days %}
+                                <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+                                <h5 class="card-title text-danger">Arıza Uyarısı</h5>
+                                <p class="card-text">Makine <strong>7 gün içinde arızalanacak</strong> tahmin ediliyor</p>
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-bell me-2"></i>Acil müdahale gerekiyor!
+                                </div>
+                            {% else %}
+                                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                                <h5 class="card-title text-success">Normal Çalışıyor</h5>
+                                <p class="card-text">Makine 7 gün içinde <strong>arızalanmayacak</strong> tahmin ediliyor</p>
+                                <div class="alert alert-success" role="alert">
+                                    <i class="fas fa-thumbs-up me-2"></i>Makine sorunsuz çalışıyor
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Failure Probability -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            {% set prob_percent = (result.Failure_Probability * 100) %}
+                            <i class="fas fa-percentage fa-4x 
+                               {% if prob_percent >= 70 %}text-danger
+                               {% elif prob_percent >= 40 %}text-warning
+                               {% else %}text-success{% endif %} mb-3"></i>
+                            <h5 class="card-title">Arıza Olasılığı</h5>
+                            <h2 class="display-4 fw-bold 
+                               {% if prob_percent >= 70 %}text-danger
+                               {% elif prob_percent >= 40 %}text-warning
+                               {% else %}text-success{% endif %}">
+                                {{ "%.1f"|format(prob_percent) }}%
+                            </h2>
+                            <div class="progress mt-3">
+                                <div class="progress-bar 
+                                    {% if prob_percent >= 70 %}bg-danger
+                                    {% elif prob_percent >= 40 %}bg-warning
+                                    {% else %}bg-success{% endif %}" 
+                                    style="width: {{ prob_percent }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remaining Useful Life -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            {% set rul_days = result.Remaining_Useful_Life_days %}
+                            <i class="fas fa-calendar-alt fa-4x 
+                               {% if rul_days <= 7 %}text-danger
+                               {% elif rul_days <= 30 %}text-warning
+                               {% else %}text-info{% endif %} mb-3"></i>
+                            <h5 class="card-title">Kalan Yararlı Ömür</h5>
+                            <h2 class="display-4 fw-bold 
+                               {% if rul_days <= 7 %}text-danger
+                               {% elif rul_days <= 30 %}text-warning
+                               {% else %}text-info{% endif %}">
+                                {{ rul_days }}
+                            </h2>
+                            <p class="text-muted">gün</p>
+                            {% if rul_days <= 7 %}
+                                <small class="text-danger">
+                                    <i class="fas fa-clock me-1"></i>Acil bakım planla
+                                </small>
+                            {% elif rul_days <= 30 %}
+                                <small class="text-warning">
+                                    <i class="fas fa-calendar-check me-1"></i>Yakında bakım planla
+                                </small>
+                            {% else %}
+                                <small class="text-info">
+                                    <i class="fas fa-thumbs-up me-1"></i>İyi çalışma durumu
+                                </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                Öneriler
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if result.Failure_Within_7_Days %}
+                                <div class="alert alert-danger">
+                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Kritik Eylemler Gerekli:</h6>
+                                    <ul class="mb-0">
+                                        <li>Acil bakım incelemesi planla</li>
+                                        <li>Bakım tamamlanana kadar operasyonları durdur</li>
+                                        <li>Kritik bileşenleri kontrol et: yataklar, contalar ve elektriksel bağlantılar</li>
+                                        <li>Son operasyon koşullarını ve hata günlüklerini gözden geçir</li>
+                                    </ul>
+                                </div>
+                            {% elif (result.Failure_Probability * 100) >= 40 %}
+                                <div class="alert alert-warning">
+                                    <h6><i class="fas fa-eye me-2"></i>İzleme Önerilir:</h6>
+                                    <ul class="mb-0">
+                                        <li>İzleme sıklığını artır</li>
+                                        <li>Önleyici bakım planla</li>
+                                        <li>Sıcaklık ve titreşim seviyelerini yakından izle</li>
+                                        <li>Yağ ve soğutucu seviyelerini düzenli kontrol et</li>
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-check-circle me-2"></i>Normal Operasyon:</h6>
+                                    <ul class="mb-0">
+                                        <li>Düzenli bakım programını sürdür</li>
+                                        <li>Standart operasyon parametrelerini izle</li>
+                                        <li>Mevcut bakım uygulamalarını koru</li>
+                                        <li>Bir sonraki tahmin 30 gün içinde önerilir</li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Parameters Summary -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                Giriş Parametre Özeti
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Sıcaklık:</strong> {{ form_data.Temperature_C }}°C</li>
+                                        <li><strong>Titreşim:</strong> {{ form_data.Vibration_mms }} mm/s</li>
+                                        <li><strong>Güç Tüketimi:</strong> {{ form_data.Power_Consumption_kW }} kW</li>
+                                        <li><strong>Çalışma Saatleri:</strong> {{ form_data.Operational_Hours }}</li>
+                                        <li><strong>Makine Tipi:</strong> {{ form_data.Machine_Type }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Hata Kodları (30 gün):</strong> {{ form_data.Error_Codes_Last_30_Days }}</li>
+                                        <li><strong>Yağ Seviyesi:</strong> {{ form_data.Oil_Level_pct }}%</li>
+                                        <li><strong>Soğutucu Seviyesi:</strong> {{ form_data.Coolant_Level_pct }}%</li>
+                                        <li><strong>Bakım Sayısı:</strong> {{ form_data.Maintenance_History_Count }}</li>
+                                        <li><strong>Arıza Sayısı:</strong> {{ form_data.Failure_History_Count }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-info btn-lg me-3">
+                    <i class="fas fa-arrow-left me-2"></i>Yeni Tahmin
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-print me-2"></i>Sonuçları Yazdır
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

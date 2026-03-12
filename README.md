@@ -215,26 +215,230 @@ The chatbot utilizes its training knowledge for:
 ---
 
 ## 🔄 n8n Workflow Automation
+- 🔗 n8n Integration Guide
 
-### Integration Features
-- **Dual API Support**: Endpoints with and without operational hours
-- **Webhook Compatible**: Direct integration with n8n webhooks
-- **Batch Processing**: Handle multiple machines in single workflow
-- **Custom Triggers**: Set up automated predictions based on time or conditions
-
-### Setup Guide
-1. Visit `/n8n_integration` for detailed setup instructions
-2. Configure webhook URLs in n8n
-3. Set up authentication and headers
-4. Test with sample data
-
-### Use Cases
-- **Scheduled Predictions**: Daily/weekly automated assessments
-- **Alert Systems**: Trigger notifications for high-risk machines  
-- **Report Generation**: Automated maintenance reports
-- **Inventory Management**: Parts ordering based on predictions
+> Predictive Maintenance API'sine n8n workflow'larını bağlamak için kapsamlı kurulum rehberi
 
 ---
+
+## 📋 İçindekiler
+
+- [API Endpoint Seçimi](#api-endpoint-seçimi)
+- [Hızlı Kurulum](#hızlı-kurulum)
+- [JSON Örnekleri](#json-örnekleri)
+- [Hangi API'yi Kullanmalıyım?](#hangi-apiyi-kullanmalıyım)
+- [Dinamik Veri Eşleme](#dinamik-veri-eşleme)
+- [Response Handling](#response-handling)
+- [Workflow Örnekleri](#workflow-örnekleri)
+- [Hata Yönetimi](#hata-yönetimi)
+- [Test](#test)
+
+---
+
+## 🔀 API Endpoint Seçimi
+
+| Özellik | Normal API | Çalışma Saatleri Olmadan |
+|---|---|---|
+| **Endpoint** | `/predict` | `/predict_without_hours` |
+| **Çalışma Saati** | Gerekli | Gerekli değil |
+| **Doğruluk** | En yüksek | Orta (25.000 saat varsayımı) |
+| **Kullanım** | Production | Test / Geliştirme |
+
+---
+
+## ⚡ Hızlı Kurulum
+
+**HTTP Request Node Ayarları:**
+
+```
+Method:        POST
+Content-Type:  application/json
+Auth:          None
+```
+
+**Endpoint URL'leri:**
+
+```
+# Normal API
+POST https://69467501-d5c2-47d7-add1-f0b1d7bd521f-00-19wwexxsknahh.riker.replit.dev/predict
+
+# Çalışma Saatleri Olmadan
+POST https://69467501-d5c2-47d7-add1-f0b1d7bd521f-00-19wwexxsknahh.riker.replit.dev/predict_without_hours
+```
+
+---
+
+## 📦 JSON Örnekleri
+
+### Normal API (`/predict`)
+
+```json
+{
+  "Temperature_C": 75.5,
+  "Vibration_mms": 4.2,
+  "Power_Consumption_kW": 150.3,
+  "Operational_Hours": 8760,
+  "Error_Codes_Last_30_Days": 5,
+  "Oil_Level_pct": 85.5,
+  "Coolant_Level_pct": 78.2,
+  "Maintenance_History_Count": 12,
+  "Failure_History_Count": 3,
+  "Machine_Type": "3D_Printer",
+  "AI_Override_Events": 0,
+  "Installation_Year": 2020,
+  "Last_Maintenance_Days_Ago": 30,
+  "Sound_dB": 65.5
+}
+```
+
+### Çalışma Saatleri Olmadan (`/predict_without_hours`)
+
+Yukarıdaki JSON'dan `Operational_Hours` alanını çıkararak kullanın.
+
+---
+
+## 🤔 Hangi API'yi Kullanmalıyım?
+
+### ✅ Normal API'yi Kullan (`/predict`)
+- Çalışma saatleri verisi mevcutsa
+- En yüksek doğruluk gerekiyorsa
+- Production ortamında
+- Kritik kararlar alınacaksa
+
+### ✅ Saatsiz API'yi Kullan (`/predict_without_hours`)
+- Çalışma saatleri verisi yoksa
+- Test / geliştirme ortamındaysan
+- Hızlı tahmin gerekiyorsa
+- Operasyonel saatler güvenilir değilse
+
+> **💡 Öneri:** Çalışma saatleri veriniz varsa her zaman normal API'yi tercih edin.
+
+---
+
+## 🔄 Dinamik Veri Eşleme
+
+n8n workflow'larında kullanabileceğiniz expression örnekleri:
+
+| Alan | n8n Expression | Açıklama |
+|---|---|---|
+| `Temperature_C` | `{{ $json.sensor_data.temperature }}` | Sıcaklık sensörü |
+| `Vibration_mms` | `{{ $json.vibration_sensor }}` | Titreşim sensörü |
+| `Power_Consumption_kW` | `{{ $json.power_meter.current_kw }}` | Güç sayacı |
+| `Operational_Hours` | `{{ $json.machine.total_hours }}` | Makine çalışma sayacı |
+| `Machine_Type` | `{{ $json.machine.type \|\| "Type_A" }}` | Makine tipi (fallback ile) |
+
+---
+
+## 📨 Response Handling
+
+### Başarılı Yanıt (`200 OK`)
+
+```json
+{
+  "Failure_Within_7_Days": false,
+  "Failure_Probability": 0.2345,
+  "Remaining_Useful_Life_days": 45.67
+}
+```
+
+### Hata Yanıtı (`500`)
+
+```json
+{
+  "error": "Detailed error message"
+}
+```
+
+### n8n'de Response Verilerine Erişim
+
+```
+{{ $json.Failure_Within_7_Days }}        → Boolean: true / false
+{{ $json.Failure_Probability }}          → Float: 0.0 - 1.0
+{{ $json.Remaining_Useful_Life_days }}   → Float: kalan gün
+```
+
+---
+
+## 🛠️ Workflow Örnekleri
+
+### Temel Makine İzleme
+
+```
+Cron (saatlik) → Sensör Verisi Al → Tahmin API → IF (arıza riski?) → E-posta / Slack
+```
+
+### Gelişmiş Gerçek Dünya Workflow'u
+
+```
+Manual Trigger
+    └── HTTP Request (Tahmin API)
+            └── Set Node (Timestamp ekle)
+                    └── IF Node (Failure_Within_7_Days?)
+                            ├── TRUE  → Set Node → Merge → Google Sheets + E-posta
+                            └── FALSE → Set Node → Merge → Google Sheets
+```
+
+**Workflow Adımları:**
+
+1. **Veri Toplama** — Makine sensör verilerini toplar
+2. **API Çağrısı** — `/predict` endpoint'ine POST isteği gönderir
+3. **Koşullu Yönlendirme** — Arıza riskine göre farklı dallara yönlendirir
+4. **Kayıt** — Tüm sonuçları Google Sheets'e kaydeder
+5. **Bildirim** — Kritik durumlarda e-posta gönderir
+
+**Kullanım Alanları:**
+- Otomatik makine izleme
+- Bakım planlaması
+- Arıza öncesi uyarı sistemi
+- Performans raporlaması
+- Karar destek sistemi
+
+---
+
+## ⚠️ Hata Yönetimi
+
+| Hata Kodu | Neden | Çözüm |
+|---|---|---|
+| `400 Bad Request` | Geçersiz giriş formatı | JSON yapısını kontrol et |
+| `500 Internal Error` | Model işlem hatası | Girdi değerlerini kontrol et |
+| `Network Timeout` | API erişilemiyor | Retry mekanizması ekle |
+
+**Önerilen n8n Hata Stratejisi:**
+
+1. **Error Workflow** tanımla
+2. **IF Node** ile HTTP status code kontrol et
+3. **Retry Logic** ekle (geçici hatalar için)
+4. **Fallback Actions** tanımla (API erişilemediğinde)
+
+---
+
+## 🧪 Test
+
+### 1. API Durumunu Kontrol Et
+
+```
+GET https://69467501-d5c2-47d7-add1-f0b1d7bd521f-00-19wwexxsknahh.riker.replit.dev/api_status
+```
+
+**Beklenen Yanıt:**
+
+```json
+{
+  "status": "running",
+  "models_loaded": true,
+  "message": "🔧 Predictive Maintenance API is Running!"
+}
+```
+
+### 2. Yüksek Risk Senaryosu Test Değerleri
+
+| Parametre | Yüksek Risk Değeri |
+|---|---|
+| `Temperature_C` | > 90°C |
+| `Vibration_mms` | > 8 mm/s |
+| `Error_Codes_Last_30_Days` | > 10 |
+| `Oil_Level_pct` | < 30% |
+| `Coolant_Level_pct` | < 30% |
 
 ## 🗂️ Project Structure
 

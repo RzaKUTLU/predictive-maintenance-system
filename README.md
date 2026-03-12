@@ -223,15 +223,15 @@ The chatbot utilizes its training knowledge for:
 
 ## 📋 İçindekiler
 
-- [API Endpoint Seçimi](#api-endpoint-seçimi)
-- [Hızlı Kurulum](#hızlı-kurulum)
-- [JSON Örnekleri](#json-örnekleri)
-- [Hangi API'yi Kullanmalıyım?](#hangi-apiyi-kullanmalıyım)
-- [Dinamik Veri Eşleme](#dinamik-veri-eşleme)
-- [Response Handling](#response-handling)
-- [Workflow Örnekleri](#workflow-örnekleri)
-- [Hata Yönetimi](#hata-yönetimi)
-- [Test](#test)
+- [API Endpoint Seçimi]
+- [Hızlı Kurulum]
+- [JSON Örnekleri]
+- [Hangi API'yi Kullanmalıyım?]
+- [Dinamik Veri Eşleme]
+- [Response Handling]
+- [Workflow Örnekleri]
+- [Hata Yönetimi]
+- [Test]
 
 ---
 

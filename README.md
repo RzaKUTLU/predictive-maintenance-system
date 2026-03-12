@@ -101,20 +101,78 @@ It also includes an AI-powered maintenance assistant chatbot (Google Gemini) for
 }
 
 ## 🔄 n8n Integration
-
-<img width="648" height="729" alt="Image" src="https://github.com/user-attachments/assets/68d902e0-4177-4a05-a6f3-705c2e71f56e" />
-
 This system provides full support for [n8n](https://n8n.io) automation workflows, enabling you to automate machine monitoring, failure alerts, and maintenance scheduling without writing additional code.
-
 ### Endpoints
-
 | Endpoint | Use Case |
 |----------|----------|
 | `POST /predict` | Full prediction **with** Operational Hours |
 | `POST /predict_without_hours` | Prediction **without** Operational Hours (prevents data leakage) |
-
 ---
-
 ### 🔁 Real-World Workflow Example
 
+https://github.com/RzaKUTLU/predictive-maintenance-system/blob/57efce9a7bb3ffc3bc93e9a3c70331af18310d95/image.png
+
 The workflow below demonstrates a complete automated maintenance pipeline:
+Manual Trigger
+↓
+HTTP Request → POST /predict (sends machine sensor data)
+↓
+Set – Timestamp → Adds current timestamp to response
+↓
+IF → Checks failure_prediction result
+↙ true (4 items) ↘ false (8 items)
+True_Set False_Set
+(failure detected) (machine healthy)
+↘ ↙
+Merge (combine results)
+↓
+Append row in sheet → Logs result to Google Sheets
+↓
+HTML → Converts data to HTML table
+↓
+Send a message → Sends Gmail alert
+
+**Workflow Steps:**
+1. **Manual / Schedule Trigger** – Starts the workflow on demand or on a schedule
+2. **HTTP Request** – Sends machine sensor data to `POST /predict`
+3. **Set – Timestamp** – Adds a timestamp field to the prediction response
+4. **IF** – Branches based on `failure_prediction` value (1 = failure detected)
+5. **True_Set / False_Set** – Labels the result as "FAILURE" or "HEALTHY"
+6. **Merge** – Combines both branches back into a single flow
+7. **Append row in sheet** – Logs all results to a Google Sheets document
+8. **HTML** – Formats the data into an HTML table for the email body
+9. **Send a message** – Sends a Gmail notification with the maintenance report
+---
+### HTTP Request Node Configuration
+**Method:** `POST`  
+**URL:** `https://your-app-url/predict`  
+**Content-Type:** `application/json`
+**Request Body:**
+```json
+{
+  "Temperature": {{ $json.temperature }},
+  "Vibration": {{ $json.vibration }},
+  "Power_Consumption": {{ $json.power }},
+  "Operational_Hours": {{ $json.hours }},
+  "Error_Codes": {{ $json.errors }},
+  "Oil_Level": {{ $json.oil }},
+  "Coolant_Level": {{ $json.coolant }},
+  "Last_Maintenance_Days": {{ $json.maintenance_days }},
+  "Machine_Type": "{{ $json.machine_type }}"
+}
+Response Fields for IF Node Conditions
+Field	Type	Example Condition
+failure_prediction	0 or 1	{{ $json.failure_prediction === 1 }}
+failure_probability	0.0–1.0	{{ $json.failure_probability > 0.8 }}
+risk_level	String	{{ $json.risk_level === "Critical" }}
+remaining_useful_life_days	Integer	{{ $json.remaining_useful_life_days < 7 }}
+will_fail_in_7_days	Boolean	{{ $json.will_fail_in_7_days === true }}
+Batch Prediction (Multiple Machines)
+Send an array to process multiple machines in one call:
+
+[
+  { "Temperature": 75, "Vibration": 0.45, "Machine_Type": "CNC_Lathe", ... },
+  { "Temperature": 82, "Vibration": 0.61, "Machine_Type": "Hydraulic_Press", ... }
+]
+
+## Demo Images

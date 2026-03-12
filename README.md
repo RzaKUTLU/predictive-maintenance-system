@@ -102,6 +102,7 @@ It also includes an AI-powered maintenance assistant chatbot (Google Gemini) for
 
 ## 🔄 n8n Integration
 
+<img width="648" height="729" alt="Image" src="https://github.com/user-attachments/assets/68d902e0-4177-4a05-a6f3-705c2e71f56e" />
 
 This system provides full support for [n8n](https://n8n.io) automation workflows, enabling you to automate machine monitoring, failure alerts, and maintenance scheduling without writing additional code.
 

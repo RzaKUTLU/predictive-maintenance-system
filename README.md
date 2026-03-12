@@ -293,6 +293,28 @@ Send an array to process multiple machines in one call:
 
 ---
 
+## 📸 Demo
+
+### 🖥️ Uygulama Giriş Ekranı
+![Uygulama Giriş Ekranı](https://github.com/user-attachments/assets/807bb16f-6493-44d6-bd2c-274b00aa58f3)
+
+### ⚙️ Makine Parametre Giriş Ekranı
+![Makine Parametre Giriş Ekranı](https://github.com/user-attachments/assets/67ed7b17-aa16-4e7a-83ae-8a5b596fb1db)
+
+### 🎯 Tahmin Sonuçları
+![Tahmin Sonuçları](https://github.com/user-attachments/assets/ad9ed7f1-7f26-4e3e-b385-b57838d1cc00)
+
+### 📋 Geçmiş Tahminler
+![Geçmiş Tahminler](https://github.com/user-attachments/assets/79eaed30-e5da-4a00-940b-ae90744cf98f)
+
+### 📊 Özellik Önem Analizi
+![Özellik Önem Analizi](https://github.com/user-attachments/assets/c9724201-fb69-42b0-9c1e-4337d1a75a56)
+
+### 🤖 Bakım Asistanı
+![Bakım Asistanı](https://github.com/user-attachments/assets/20fb153e-3136-4e49-8d6a-996082c9db5d)
+
+### 💬 Bakım Asistanı Örnek Yanıtı
+![Bakım Asistanı Örnek Yanıtı](https://github.com/user-attachments/assets/9a65c1f5-2c2c-473f-bb6d-0443a2385bde)
 ## 👤 Author
 
 **Rza KUTLU**  

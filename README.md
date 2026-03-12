@@ -209,7 +209,7 @@ This system provides full support for [n8n](https://n8n.io) automation workflows
 
 ### 🔁 Real-World Workflow Example
 
-https://github.com/RzaKUTLU/predictive-maintenance-system/blob/57efce9a7bb3ffc3bc93e9a3c70331af18310d95/image.png
+![image alt](https://github.com/RzaKUTLU/predictive-maintenance-system/blob/57efce9a7bb3ffc3bc93e9a3c70331af18310d95/image.png)
 
 The workflow below demonstrates a complete automated maintenance pipeline:
 

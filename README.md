@@ -8,6 +8,8 @@ An AI-powered predictive maintenance platform for industrial machinery built wit
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
+## 🎬 Demo
+The live demo showcases a full end-to-end predictive maintenance workflow for industrial machinery. Users can input real-time sensor readings — including temperature, vibration, power consumption, oil level, coolant level, and error codes — directly through the web dashboard. Upon submission, the system instantly runs the data through a trained XGBoost pipeline and returns a failure probability score, a risk level classification (Low to Critical), and an estimated Remaining Useful Life in days. The demo also highlights the AI Maintenance Assistant, where users can ask natural language questions about machine health and receive expert-level maintenance recommendations powered by Google Gemini 2.5 Flash. The prediction history page displays all past evaluations stored in the database, allowing users to track machine degradation over time. Additionally, the feature importance analysis page visualizes which sensor parameters — such as the Temperature-Vibration interaction or Oil-Coolant differential — contribute most to the failure prediction, providing explainability for the model's decisions. The entire system is accessible via both the web interface and a RESTful JSON API, making it suitable for integration with automation tools such as n8n.
 
 ## 📖 Overview
 

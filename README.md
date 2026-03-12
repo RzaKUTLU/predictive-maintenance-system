@@ -99,3 +99,23 @@ It also includes an AI-powered maintenance assistant chatbot (Google Gemini) for
   "Last_Maintenance_Days": 45,
   "Machine_Type": "CNC_Lathe"
 }
+
+## 🔄 n8n Integration
+
+<img width="1839" height="326" alt="image" src="https://github.com/user-attachments/assets/fe38ba36-d82f-483d-b539-4d6489c759ea" />
+
+
+This system provides full support for [n8n](https://n8n.io) automation workflows, enabling you to automate machine monitoring, failure alerts, and maintenance scheduling without writing additional code.
+
+### Endpoints
+
+| Endpoint | Use Case |
+|----------|----------|
+| `POST /predict` | Full prediction **with** Operational Hours |
+| `POST /predict_without_hours` | Prediction **without** Operational Hours (prevents data leakage) |
+
+---
+
+### 🔁 Real-World Workflow Example
+
+The workflow below demonstrates a complete automated maintenance pipeline:
